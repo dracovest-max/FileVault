@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FileVault — Repositorio</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root {
+    --bg: #0a0a0f; --surface: #111118; --border: #1e1e2e;
+    --accent: #7c3aed; --accent2: #a78bfa; --text: #e2e8f0;
+    --muted: #64748b; --success: #10b981; --danger: #ef4444;
+    --star: #f59e0b;
+    --mono: 'Space Mono', monospace; --sans: 'Syne', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+  header { border-bottom: 1px solid var(--border); padding: 20px 0; position: sticky; top: 0; background: rgba(10,10,15,0.9); backdrop-filter: blur(12px); z-index: 100; }
+  header .container { display: flex; align-items: center; justify-content: space-between; }
+  .logo { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--accent2); letter-spacing: 2px; text-transform: uppercase; }
+  .logo span { color: var(--accent); margin-right: 2px; }
+  .admin-btn { font-family: var(--mono); font-size: 0.7rem; padding: 8px 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; }
+  .admin-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .hero { padding: 60px 0 40px; text-align: center; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  .hero h1 .highlight { color: var(--accent2); }
+  .hero p { color: var(--muted); font-family: var(--mono); font-size: 0.85rem; letter-spacing: 1px; }
+  .stats { display: flex; gap: 32px; justify-content: center; margin: 32px 0; flex-wrap: wrap; }
+  .stat { text-align: center; }
+  .stat-num { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; color: var(--accent2); }
+  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
+  .search-bar { margin: 0 0 40px; position: relative; }
+  .search-bar input { width: 100%; padding: 14px 20px 14px 50px; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+  .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+  .section-title { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  .file-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 60px; }
+
+  /* File card */
+  .file-card { background: var(--surface); border: 1px solid var(--border); transition: border-color 0.2s; animation: slideIn 0.3s ease forwards; opacity: 0; }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .file-card:hover { border-color: rgba(124,58,237,0.4); }
+  .file-main { padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .file-icon { width: 40px; height: 40px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+  .file-info { flex: 1; min-width: 0; }
+  .file-name { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-meta { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+  .file-desc { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+  .file-ext { font-family: var(--mono); font-size: 0.65rem; padding: 3px 8px; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2); color: var(--accent2); text-transform: uppercase; flex-shrink: 0; }
+  .file-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .download-btn { padding: 8px 18px; background: var(--accent); color: white; border: none; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; }
+  .download-btn:hover { background: #6d28d9; }
+  .delete-btn { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; padding: 4px 8px; opacity: 0.5; transition: opacity 0.2s; }
+  .delete-btn:hover { opacity: 1; }
+
+  /* Stars display */
+  .stars-row { padding: 0 20px 12px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; }
+  .stars-display { display: flex; gap: 2px; }
+  .star-icon { color: #334155; font-size: 1rem; }
+  .star-icon.filled { color: var(--star); }
+  .rating-info { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+  .review-toggle { font-family: var(--mono); font-size: 0.65rem; padding: 5px 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; margin-left: auto; }
+  .review-toggle:hover { border-color: var(--accent); color: var(--accent2); }
+
+  /* Reviews section */
+  .reviews-section { border-top: 1px solid var(--border); padding: 20px; display: none; }
+  .reviews-section.open { display: block; }
+  .reviews-title { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 16px; }
+
+  /* Review form */
+  .review-form { background: rgba(124,58,237,0.04); border: 1px solid rgba(124,58,237,0.15); padding: 16px; margin-bottom: 20px; }
+  .review-form-title { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent2); margin-bottom: 12px; }
+  .star-picker { display: flex; gap: 4px; margin-bottom: 12px; }
+  .star-pick { font-size: 1.4rem; cursor: pointer; color: #334155; transition: color 0.15s, transform 0.1s; }
+  .star-pick:hover, .star-pick.active { color: var(--star); transform: scale(1.15); }
+  .review-inputs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .review-inputs input { flex: 1; min-width: 120px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.8rem; outline: none; transition: border-color 0.2s; }
+  .review-inputs input:focus { border-color: var(--accent); }
+  .review-inputs input::placeholder { color: var(--muted); }
+  .review-comment { width: 100%; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.8rem; outline: none; transition: border-color 0.2s; resize: vertical; margin-bottom: 8px; }
+  .review-comment:focus { border-color: var(--accent); }
+  .review-comment::placeholder { color: var(--muted); }
+  .submit-review { padding: 8px 20px; background: var(--accent); color: white; border: none; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .submit-review:hover { background: #6d28d9; }
+  .submit-review:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Review list */
+  .review-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .review-item:last-child { border-bottom: none; }
+  .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+  .review-author { font-weight: 600; font-size: 0.85rem; }
+  .review-stars { display: flex; gap: 2px; }
+  .review-star { font-size: 0.8rem; color: #334155; }
+  .review-star.filled { color: var(--star); }
+  .review-date { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-left: auto; }
+  .review-comment-text { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
+  .no-reviews { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; padding: 20px 0; }
+
+  /* Misc */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
+  .empty-state .big { font-size: 3rem; margin-bottom: 16px; }
+  .loading { text-align: center; padding: 40px; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+  .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Modal */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
+  .modal-overlay.active { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); padding: 40px; width: 100%; max-width: 480px; animation: modalIn 0.25s ease; }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+  .modal h2 { font-size: 1.2rem; margin-bottom: 8px; }
+  .modal p { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 28px; }
+  .form-group { margin-bottom: 20px; }
+  .form-group label { display: block; font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
+  .form-group input, .form-group textarea { width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s; resize: vertical; }
+  .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: var(--muted); }
+  .drop-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(124,58,237,0.05); color: var(--accent2); }
+  .drop-zone input { display: none; }
+  .modal-actions { display: flex; gap: 12px; margin-top: 28px; }
+  .btn-primary { flex: 1; padding: 12px; background: var(--accent); color: white; border: none; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+  .btn-primary:hover { background: #6d28d9; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-secondary { padding: 12px 20px; background: transparent; color: var(--muted); border: 1px solid var(--border); font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+  .error-msg { font-family: var(--mono); font-size: 0.75rem; color: var(--danger); margin-top: 8px; display: none; }
+  #adminPanel { display: none; background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.2); padding: 24px; margin-bottom: 40px; }
+  #adminPanel.active { display: block; }
+  #adminPanel h3 { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent2); margin-bottom: 16px; }
+  .admin-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tag-success { display: inline-block; padding: 4px 10px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; margin-left: 12px; }
+  .progress-wrap { margin-top: 16px; display: none; }
+  .progress-label { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar { height: 4px; background: var(--border); }
+  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); padding: 14px 20px; font-family: var(--mono); font-size: 0.8rem; z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.3s; pointer-events: none; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-color: var(--success); color: var(--success); }
+  .toast.error { border-color: var(--danger); color: var(--danger); }
+  footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: center; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); position: relative; z-index: 1; }
+  @media (max-width: 600px) { .file-ext { display: none; } .modal { padding: 24px; margin: 16px; } .file-main { flex-wrap: wrap; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo"><span>//</span>FileVault</div>
+    <button class="admin-btn" id="adminToggleBtn" onclick="openPasswordModal()">Admin ⌘</button>
+  </div>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1>Repositorio de<br><span class="highlight">Archivos</span></h1>
+    <p>// descargá lo que necesitás — todo en un lugar</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="totalFiles">—</div><div class="stat-label">Archivos</div></div>
+    <div class="stat"><div class="stat-num" id="totalSize">—</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="totalReviews">—</div><div class="stat-label">Reseñas</div></div>
+  </div>
+  <div id="adminPanel">
+    <h3>● Panel de administración <span class="tag-success">Activo</span></h3>
+    <div class="admin-actions">
+      <button class="btn-primary" style="flex:none;padding:10px 24px;" onclick="openUploadModal()">+ Subir archivo</button>
+      <button class="btn-secondary" onclick="logoutAdmin()">Cerrar sesión</button>
+    </div>
+  </div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="Buscar archivo..." oninput="filterFiles()">
+  </div>
+  <div class="section-title">Archivos disponibles</div>
+  <div class="file-list" id="fileList">
+    <div class="loading"><div class="spinner"></div>Cargando archivos...</div>
+  </div>
+</main>
+
+<footer><div class="container">FileVault &mdash; repositorio público &mdash; <span id="year"></span></div></footer>
+<div class="toast" id="toast"></div>
+
+<!-- Password Modal -->
+<div class="modal-overlay" id="passwordModal">
+  <div class="modal" style="max-width:380px">
+    <h2>Acceso Admin</h2>
+    <p>// ingresá la contraseña para continuar</p>
+    <div class="form-group">
+      <label>Contraseña</label>
+      <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()">
+      <div class="error-msg" id="passwordError">Contraseña incorrecta.</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="checkPassword()">Ingresar</button>
+      <button class="btn-secondary" onclick="closeModal('passwordModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Upload Modal -->
+<div class="modal-overlay" id="uploadModal">
+  <div class="modal">
+    <h2>Subir archivo</h2>
+    <p>// cualquier tipo de archivo excepto imágenes y videos</p>
+    <div class="form-group">
+      <label>Archivo</label>
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave()" ondrop="dropFile(event)">
+        <input type="file" id="fileInput" onchange="fileSelected(event)">
+        <div id="dropText"><div style="font-size:2rem;margin-bottom:8px">📂</div>Hacé click o arrastrá un archivo aquí</div>
+      </div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-label" id="progressLabel">Subiendo... 0%</div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Descripción (opcional)</label>
+      <textarea id="fileDesc" rows="2" placeholder="Breve descripción del archivo..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="uploadBtn" onclick="uploadFile()">Publicar</button>
+      <button class="btn-secondary" onclick="closeModal('uploadModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = 'https://qqkrtydlmgtacnlgfeju.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxa3J0eWRsbWd0YWNubGdmZWp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzc5NzUsImV4cCI6MjA4OTk1Mzk3NX0.E8xvlTXkFDqZhYZ2V0r2YhzX4Y4d8TxlI-75yMR14UA';
+  const ADMIN_PASSWORD = 'admin1234'; // ← CAMBIÁ ESTO
+  const BUCKET = 'files';
+  const BLOCKED_TYPES = ['image/', 'video/'];
+
+  const { createClient } = supabase;
+  const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let isAdmin = false;
+  let selectedFile = null;
+  let allFiles = [];
+  let reviewsCache = {};
+
+  function getFileIcon(ext) {
+    const m = {pdf:'📄',zip:'🗜️',rar:'🗜️','7z':'🗜️',tar:'🗜️',gz:'🗜️',exe:'⚙️',msi:'⚙️',apk:'📱',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',ppt:'📑',pptx:'📑',txt:'📃',csv:'📊',json:'🔧',xml:'🔧',html:'🌐',css:'🎨',js:'🟨',py:'🐍',cpp:'💻',c:'💻',cs:'💻',java:'☕',ts:'🔷',mp3:'🎵',wav:'🎵',ogg:'🎵',flac:'🎵',aac:'🎵'};
+    return m[ext?.toLowerCase()] || '📁';
+  }
+
+  function formatSize(b) {
+    if (!b) return '—';
+    if (b < 1024) return b + ' B';
+    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+    return (b/1048576).toFixed(1) + ' MB';
+  }
+
+  function formatDate(ts) {
+    return new Date(ts).toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+
+  function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  function starsHTML(rating, cls='star-icon') {
+    return [1,2,3,4,5].map(i => `<span class="${cls}${i <= rating ? ' filled' : ''}">★</span>`).join('');
+  }
+
+  // ── CARGAR ARCHIVOS ──────────────────────────────────────
+  async function loadFiles() {
+    const { data, error } = await db.from('files').select('*').order('created_at', {ascending: false});
+    if (error) {
+      document.getElementById('fileList').innerHTML = `<div class="empty-state"><div class="big">⚠️</div>Error al cargar.<br><small>${error.message}</small></div>`;
+      return;
+    }
+    allFiles = data || [];
+
+    // Cargar todas las reseñas de una vez
+    const { data: revData } = await db.from('reviews').select('*').order('created_at', {ascending: false});
+    reviewsCache = {};
+    let totalRevs = 0;
+    (revData || []).forEach(r => {
+      if (!reviewsCache[r.file_id]) reviewsCache[r.file_id] = [];
+      reviewsCache[r.file_id].push(r);
+      totalRevs++;
+    });
+
+    document.getElementById('totalFiles').textContent = allFiles.length;
+    document.getElementById('totalReviews').textContent = totalRevs;
+    const total = allFiles.reduce((s,f) => s+(f.size||0), 0);
+    document.getElementById('totalSize').textContent = formatSize(total);
+    renderFiles(allFiles);
+  }
+
+  function filterFiles() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    renderFiles(allFiles.filter(f => f.name.toLowerCase().includes(q) || (f.description||'').toLowerCase().includes(q)));
+  }
+
+  function renderFiles(files) {
+    const list = document.getElementById('fileList');
+    if (!files.length) { list.innerHTML = `<div class="empty-state"><div class="big">📭</div>No hay archivos disponibles.</div>`; return; }
+    list.innerHTML = files.map((f, i) => {
+      const ext = f.name.split('.').pop();
+      const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${f.storage_path}`;
+      const reviews = reviewsCache[f.id] || [];
+      const avgRating = reviews.length ? (reviews.reduce((s,r) => s+r.rating, 0) / reviews.length) : 0;
+      const roundedAvg = Math.round(avgRating);
+      return `
+      <div class="file-card" style="animation-delay:${i*0.05}s" id="card-${f.id}">
+        <div class="file-main">
+          <div class="file-icon">${getFileIcon(ext)}</div>
+          <div class="file-info">
+            <div class="file-name">${f.name}</div>
+            ${f.description ? `<div class="file-desc">${f.description}</div>` : ''}
+            <div class="file-meta">${formatSize(f.size)} &bull; ${formatDate(f.created_at)}</div>
+          </div>
+          <div class="file-ext">${ext}</div>
+          <div class="file-actions">
+            <a class="download-btn" href="${url}" download="${f.name}" target="_blank">↓ Descargar</a>
+            ${isAdmin ? `<button class="delete-btn" onclick="deleteFile('${f.id}','${f.storage_path}')">✕</button>` : ''}
+          </div>
+        </div>
+        <div class="stars-row">
+          <div class="stars-display">${starsHTML(roundedAvg)}</div>
+          <div class="rating-info">
+            ${avgRating > 0 ? `${avgRating.toFixed(1)} / 5` : 'Sin calificación'} &bull; ${reviews.length} reseña${reviews.length !== 1 ? 's' : ''}
+          </div>
+          <button class="review-toggle" onclick="toggleReviews('${f.id}')">
+            💬 Reseñas
+          </button>
+        </div>
+        <div class="reviews-section" id="reviews-${f.id}">
+          <div class="reviews-title">// dejar una reseña</div>
+          <div class="review-form">
+            <div class="review-form-title">Tu calificación</div>
+            <div class="star-picker" id="picker-${f.id}">
+              ${[1,2,3,4,5].map(n => `<span class="star-pick" data-val="${n}" onclick="pickStar('${f.id}',${n})">★</span>`).join('')}
+            </div>
+            <div class="review-inputs">
+              <input type="text" id="author-${f.id}" placeholder="Tu nombre o apodo" maxlength="40">
+            </div>
+            <textarea class="review-comment" id="comment-${f.id}" rows="2" placeholder="Comentario (opcional)..."></textarea>
+            <button class="submit-review" onclick="submitReview('${f.id}')">Publicar reseña</button>
+          </div>
+          <div class="reviews-title" style="margin-top:8px">// reseñas de otros</div>
+          <div id="review-list-${f.id}">
+            ${renderReviewList(reviews)}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderReviewList(reviews) {
+    if (!reviews.length) return `<div class="no-reviews">Todavía no hay reseñas. ¡Sé el primero!</div>`;
+    return reviews.map(r => `
+      <div class="review-item">
+        <div class="review-header">
+          <span class="review-author">${r.author}</span>
+          <div class="review-stars">${starsHTML(r.rating, 'review-star')}</div>
+          <span class="review-date">${formatDate(r.created_at)}</span>
+        </div>
+        ${r.comment ? `<div class="review-comment-text">${r.comment}</div>` : ''}
+      </div>`).join('');
+  }
+
+  // ── ESTRELLAS ────────────────────────────────────────────
+  const selectedStars = {};
+
+  function pickStar(fileId, val) {
+    selectedStars[fileId] = val;
+    const picker = document.getElementById(`picker-${fileId}`);
+    picker.querySelectorAll('.star-pick').forEach(s => {
+      s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+    });
+  }
+
+  // ── TOGGLE RESEÑAS ───────────────────────────────────────
+  function toggleReviews(fileId) {
+    const sec = document.getElementById(`reviews-${fileId}`);
+    sec.classList.toggle('open');
+  }
+
+  // ── ENVIAR RESEÑA ────────────────────────────────────────
+  async function submitReview(fileId) {
+    const rating = selectedStars[fileId];
+    const author = document.getElementById(`author-${fileId}`).value.trim();
+    const comment = document.getElementById(`comment-${fileId}`).value.trim();
+
+    if (!rating) { showToast('Seleccioná una calificación de estrellas.', 'error'); return; }
+    if (!author) { showToast('Ingresá tu nombre o apodo.', 'error'); return; }
+
+    const btn = document.querySelector(`#reviews-${fileId} .submit-review`);
+    btn.disabled = true; btn.textContent = 'Enviando...';
+
+    const { error } = await db.from('reviews').insert({
+      file_id: fileId, author, rating, comment: comment || null
+    });
+
+    if (error) {
+      showToast('Error al publicar: ' + error.message, 'error');
+      btn.disabled = false; btn.textContent = 'Publicar reseña';
+      return;
+    }
+
+    showToast('✅ Reseña publicada.');
+    // Recargar
+    await loadFiles();
+    // Reabrir la sección
+    setTimeout(() => {
+      const sec = document.getElementById(`reviews-${fileId}`);
+      if (sec) sec.classList.add('open');
+    }, 100);
+  }
+
+  // ── SUBIR ARCHIVO ────────────────────────────────────────
+  async function uploadFile() {
+    if (!selectedFile) { showToast('Seleccioná un archivo primero.','error'); return; }
+    const btn = document.getElementById('uploadBtn');
+    btn.disabled = true; btn.textContent = 'Subiendo...';
+    const pw = document.getElementById('progressWrap');
+    const pf = document.getElementById('progressFill');
+    const pl = document.getElementById('progressLabel');
+    pw.style.display = 'block';
+    let p = 0;
+    const iv = setInterval(() => { if (p<85) { p+=5; pf.style.width=p+'%'; pl.textContent=`Subiendo... ${p}%`; } }, 200);
+    const path = `${Date.now()}_${selectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const { error: ue } = await db.storage.from(BUCKET).upload(path, selectedFile, {contentType: selectedFile.type});
+    clearInterval(iv);
+    if (ue) { pw.style.display='none'; btn.disabled=false; btn.textContent='Publicar'; showToast('Error al subir: '+ue.message,'error'); return; }
+    pf.style.width='100%'; pl.textContent='Guardando...';
+    const { error: de } = await db.from('files').insert({name:selectedFile.name, description:document.getElementById('fileDesc').value.trim()||null, size:selectedFile.size, storage_path:path});
+    if (de) { showToast('Error al guardar: '+de.message,'error'); }
+    else { showToast('✅ Archivo publicado.'); closeModal('uploadModal'); await loadFiles(); }
+    pw.style.display='none'; btn.disabled=false; btn.textContent='Publicar';
+  }
+
+  // ── ELIMINAR ─────────────────────────────────────────────
+  async function deleteFile(id, path) {
+    if (!confirm('¿Eliminar este archivo y sus reseñas?')) return;
+    await db.storage.from(BUCKET).remove([path]);
+    await db.from('files').delete().eq('id', id);
+    showToast('Archivo eliminado.'); await loadFiles();
+  }
+
+  // ── ADMIN ────────────────────────────────────────────────
+  function openPasswordModal() {
+    if (isAdmin) { logoutAdmin(); return; }
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordError').style.display = 'none';
+    document.getElementById('passwordModal').classList.add('active');
+    setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+  }
+  function checkPassword() {
+    if (document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
+      isAdmin = true; closeModal('passwordModal');
+      document.getElementById('adminPanel').classList.add('active');
+      document.getElementById('adminToggleBtn').textContent = 'Salir ✕';
+      renderFiles(allFiles);
+    } else {
+      document.getElementById('passwordError').style.display = 'block';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('passwordInput').focus();
+    }
+  }
+  function logoutAdmin() {
+    isAdmin = false;
+    document.getElementById('adminPanel').classList.remove('active');
+    document.getElementById('adminToggleBtn').textContent = 'Admin ⌘';
+    renderFiles(allFiles);
+  }
+
+  // ── UPLOAD MODAL ─────────────────────────────────────────
+  function openUploadModal() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('fileDesc').value = '';
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('dropText').innerHTML = '<div style="font-size:2rem;margin-bottom:8px">📂</div>Hacé click o arrastrá un archivo aquí';
+    document.getElementById('uploadModal').classList.add('active');
+  }
+  function fileSelected(e) {
+    const f = e.target.files[0]; if (!f) return;
+    if (BLOCKED_TYPES.some(t => f.type.startsWith(t))) { showToast('❌ No se permiten imágenes ni videos.','error'); return; }
+    selectedFile = f;
+    document.getElementById('dropText').innerHTML = `<div style="font-size:1.5rem;margin-bottom:6px">✅</div>${f.name}<br><small style="color:var(--muted)">${formatSize(f.size)}</small>`;
+  }
+  function dragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+  function dragLeave() { document.getElementById('dropZone').classList.remove('drag-over'); }
+  function dropFile(e) {
+    e.preventDefault(); dragLeave();
+    const f = e.dataTransfer.files[0]; if (!f) return;
+    if (BLOCKED_TYPES.some(t => f.type.startsWith(t))) { showToast('❌ No se permiten imágenes ni videos.','error'); return; }
+    selectedFile = f;
+    document.getElementById('dropText').innerHTML = `<div style="font-size:1.5rem;margin-bottom:6px">✅</div>${f.name}<br><small style="color:var(--muted)">${formatSize(f.size)}</small>`;
+  }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+  document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target===o) o.classList.remove('active'); }));
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+  loadFiles();
+</script>
+</body>
+</html>
