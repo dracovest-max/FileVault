@@ -11,143 +11,186 @@
     --bg: #0a0a0f; --surface: #111118; --border: #1e1e2e;
     --accent: #7c3aed; --accent2: #a78bfa; --text: #e2e8f0;
     --muted: #64748b; --success: #10b981; --danger: #ef4444;
-    --star: #f59e0b;
-    --mono: 'Space Mono', monospace; --sans: 'Syne', sans-serif;
+    --star: #f59e0b; --mono: 'Space Mono', monospace; --sans: 'Syne', sans-serif;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; overflow-x: hidden; }
-  body::before {
-    content: ''; position: fixed; inset: 0;
-    background-image: linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
-    background-size: 40px 40px; pointer-events: none; z-index: 0;
-  }
-  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
-  header { border-bottom: 1px solid var(--border); padding: 20px 0; position: sticky; top: 0; background: rgba(10,10,15,0.9); backdrop-filter: blur(12px); z-index: 100; }
-  header .container { display: flex; align-items: center; justify-content: space-between; }
-  .logo { font-family: var(--mono); font-size: 1.1rem; font-weight: 700; color: var(--accent2); letter-spacing: 2px; text-transform: uppercase; }
-  .logo span { color: var(--accent); margin-right: 2px; }
-  .admin-btn { font-family: var(--mono); font-size: 0.7rem; padding: 8px 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; }
-  .admin-btn:hover { border-color: var(--accent); color: var(--accent2); }
-  .hero { padding: 60px 0 40px; text-align: center; }
-  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
-  .hero h1 .highlight { color: var(--accent2); }
-  .hero p { color: var(--muted); font-family: var(--mono); font-size: 0.85rem; letter-spacing: 1px; }
-  .stats { display: flex; gap: 32px; justify-content: center; margin: 32px 0; flex-wrap: wrap; }
-  .stat { text-align: center; }
-  .stat-num { font-family: var(--mono); font-size: 1.8rem; font-weight: 700; color: var(--accent2); }
-  .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 4px; }
-  .search-bar { margin: 0 0 40px; position: relative; }
-  .search-bar input { width: 100%; padding: 14px 20px 14px 50px; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
-  .search-bar input:focus { border-color: var(--accent); }
-  .search-bar input::placeholder { color: var(--muted); }
-  .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--muted); }
-  .section-title { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--muted); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-  .file-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 60px; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden}
+  body.light{--bg:#f8fafc;--surface:#ffffff;--border:#e2e8f0;--text:#0f172a;--muted:#94a3b8}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(124,58,237,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  .container{max-width:960px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
 
-  /* File card */
-  .file-card { background: var(--surface); border: 1px solid var(--border); transition: border-color 0.2s; animation: slideIn 0.3s ease forwards; opacity: 0; }
-  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .file-card:hover { border-color: rgba(124,58,237,0.4); }
-  .file-main { padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
-  .file-icon { width: 40px; height: 40px; background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
-  .file-info { flex: 1; min-width: 0; }
-  .file-name { font-weight: 600; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .file-meta { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
-  .file-desc { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
-  .file-ext { font-family: var(--mono); font-size: 0.65rem; padding: 3px 8px; background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2); color: var(--accent2); text-transform: uppercase; flex-shrink: 0; }
-  .file-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .download-btn { padding: 8px 18px; background: var(--accent); color: white; border: none; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; text-decoration: none; display: inline-block; }
-  .download-btn:hover { background: #6d28d9; }
-  .delete-btn { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; padding: 4px 8px; opacity: 0.5; transition: opacity 0.2s; }
-  .delete-btn:hover { opacity: 1; }
+  /* HEADER */
+  header{border-bottom:1px solid var(--border);padding:16px 0;position:sticky;top:0;background:rgba(10,10,15,0.92);backdrop-filter:blur(12px);z-index:100}
+  body.light header{background:rgba(248,250,252,0.92)}
+  header .container{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .logo{font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--accent2);letter-spacing:2px;text-transform:uppercase}
+  .logo span{color:var(--accent);margin-right:2px}
+  .header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .icon-btn{font-family:var(--mono);font-size:0.7rem;padding:7px 13px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s}
+  .icon-btn:hover{border-color:var(--accent);color:var(--accent2)}
 
-  /* Stars display */
-  .stars-row { padding: 0 20px 12px; display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--border); padding-top: 12px; flex-wrap: wrap; }
-  .stars-display { display: flex; gap: 2px; }
-  .star-icon { color: #334155; font-size: 1rem; }
-  .star-icon.filled { color: var(--star); }
-  .rating-info { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
-  .review-toggle { font-family: var(--mono); font-size: 0.65rem; padding: 5px 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; margin-left: auto; }
-  .review-toggle:hover { border-color: var(--accent); color: var(--accent2); }
+  /* HERO */
+  .hero{padding:50px 0 30px;text-align:center}
+  .hero h1{font-size:clamp(1.8rem,5vw,3.2rem);font-weight:800;line-height:1.1;margin-bottom:12px}
+  .hero h1 .highlight{color:var(--accent2)}
+  .hero p{color:var(--muted);font-family:var(--mono);font-size:0.8rem;letter-spacing:1px}
 
-  /* Reviews section */
-  .reviews-section { border-top: 1px solid var(--border); padding: 20px; display: none; }
-  .reviews-section.open { display: block; }
-  .reviews-title { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 16px; }
+  /* STATS */
+  .stats{display:flex;gap:24px;justify-content:center;margin:24px 0;flex-wrap:wrap}
+  .stat{text-align:center}
+  .stat-num{font-family:var(--mono);font-size:1.6rem;font-weight:700;color:var(--accent2)}
+  .stat-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
 
-  /* Review form */
-  .review-form { background: rgba(124,58,237,0.04); border: 1px solid rgba(124,58,237,0.15); padding: 16px; margin-bottom: 20px; }
-  .review-form-title { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent2); margin-bottom: 12px; }
-  .star-picker { display: flex; gap: 4px; margin-bottom: 12px; }
-  .star-pick { font-size: 1.4rem; cursor: pointer; color: #334155; transition: color 0.15s, transform 0.1s; }
-  .star-pick:hover, .star-pick.active { color: var(--star); transform: scale(1.15); }
-  .review-inputs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
-  .review-inputs input { flex: 1; min-width: 120px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.8rem; outline: none; transition: border-color 0.2s; }
-  .review-inputs input:focus { border-color: var(--accent); }
-  .review-inputs input::placeholder { color: var(--muted); }
-  .review-comment { width: 100%; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.8rem; outline: none; transition: border-color 0.2s; resize: vertical; margin-bottom: 8px; }
-  .review-comment:focus { border-color: var(--accent); }
-  .review-comment::placeholder { color: var(--muted); }
-  .submit-review { padding: 8px 20px; background: var(--accent); color: white; border: none; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
-  .submit-review:hover { background: #6d28d9; }
-  .submit-review:disabled { opacity: 0.5; cursor: not-allowed; }
+  /* TOOLBAR */
+  .toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+  .search-wrap{position:relative;flex:1;min-width:200px}
+  .search-wrap input{width:100%;padding:11px 16px 11px 42px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.82rem;outline:none;transition:border-color 0.2s}
+  .search-wrap input:focus{border-color:var(--accent)}
+  .search-wrap input::placeholder{color:var(--muted)}
+  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:0.9rem}
+  .filter-select{padding:11px 14px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.78rem;outline:none;cursor:pointer;transition:border-color 0.2s}
+  .filter-select:focus{border-color:var(--accent)}
+  .view-btns{display:flex;gap:4px}
+  .view-btn{padding:9px 12px;background:var(--surface);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:0.9rem;transition:all 0.2s}
+  .view-btn.active{border-color:var(--accent);color:var(--accent2)}
 
-  /* Review list */
-  .review-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
-  .review-item:last-child { border-bottom: none; }
-  .review-header { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
-  .review-author { font-weight: 600; font-size: 0.85rem; }
-  .review-stars { display: flex; gap: 2px; }
-  .review-star { font-size: 0.8rem; color: #334155; }
-  .review-star.filled { color: var(--star); }
-  .review-date { font-family: var(--mono); font-size: 0.65rem; color: var(--muted); margin-left: auto; }
-  .review-comment-text { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; }
-  .no-reviews { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; padding: 20px 0; }
+  /* SECTION TITLE */
+  .section-title{font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 
-  /* Misc */
-  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-family: var(--mono); font-size: 0.8rem; }
-  .empty-state .big { font-size: 3rem; margin-bottom: 16px; }
-  .loading { text-align: center; padding: 40px; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
-  .spinner { width: 32px; height: 32px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* FILE LIST */
+  .file-list{display:flex;flex-direction:column;gap:10px;margin-bottom:60px}
+  .file-list.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
 
-  /* Modal */
-  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); z-index: 200; align-items: center; justify-content: center; }
-  .modal-overlay.active { display: flex; }
-  .modal { background: var(--surface); border: 1px solid var(--border); padding: 40px; width: 100%; max-width: 480px; animation: modalIn 0.25s ease; }
-  @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-  .modal h2 { font-size: 1.2rem; margin-bottom: 8px; }
-  .modal p { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 28px; }
-  .form-group { margin-bottom: 20px; }
-  .form-group label { display: block; font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 8px; }
-  .form-group input, .form-group textarea { width: 100%; padding: 12px 16px; background: var(--bg); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.85rem; outline: none; transition: border-color 0.2s; resize: vertical; }
-  .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-  .form-group input::placeholder, .form-group textarea::placeholder { color: var(--muted); }
-  .drop-zone { border: 2px dashed var(--border); padding: 30px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
-  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(124,58,237,0.05); color: var(--accent2); }
-  .drop-zone input { display: none; }
-  .modal-actions { display: flex; gap: 12px; margin-top: 28px; }
-  .btn-primary { flex: 1; padding: 12px; background: var(--accent); color: white; border: none; font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
-  .btn-primary:hover { background: #6d28d9; }
-  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-secondary { padding: 12px 20px; background: transparent; color: var(--muted); border: 1px solid var(--border); font-family: var(--mono); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
-  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
-  .error-msg { font-family: var(--mono); font-size: 0.75rem; color: var(--danger); margin-top: 8px; display: none; }
-  #adminPanel { display: none; background: rgba(124,58,237,0.05); border: 1px solid rgba(124,58,237,0.2); padding: 24px; margin-bottom: 40px; }
-  #adminPanel.active { display: block; }
-  #adminPanel h3 { font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent2); margin-bottom: 16px; }
-  .admin-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-  .tag-success { display: inline-block; padding: 4px 10px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--success); font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; margin-left: 12px; }
-  .progress-wrap { margin-top: 16px; display: none; }
-  .progress-label { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 6px; }
-  .progress-bar { height: 4px; background: var(--border); }
-  .progress-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
-  .toast { position: fixed; bottom: 24px; right: 24px; background: var(--surface); border: 1px solid var(--border); padding: 14px 20px; font-family: var(--mono); font-size: 0.8rem; z-index: 999; transform: translateY(80px); opacity: 0; transition: all 0.3s; pointer-events: none; }
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast.success { border-color: var(--success); color: var(--success); }
-  .toast.error { border-color: var(--danger); color: var(--danger); }
-  footer { border-top: 1px solid var(--border); padding: 24px 0; text-align: center; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); position: relative; z-index: 1; }
-  @media (max-width: 600px) { .file-ext { display: none; } .modal { padding: 24px; margin: 16px; } .file-main { flex-wrap: wrap; } }
+  /* FILE CARD */
+  .file-card{background:var(--surface);border:1px solid var(--border);transition:border-color 0.2s,transform 0.15s;animation:slideIn 0.3s ease forwards;opacity:0}
+  @keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .file-card:hover{border-color:rgba(124,58,237,0.4)}
+  .file-list.grid .file-card{display:flex;flex-direction:column}
+  .file-main{padding:14px 18px;display:flex;align-items:center;gap:14px}
+  .file-list.grid .file-main{flex-direction:column;align-items:flex-start;padding:18px}
+  .file-icon{width:38px;height:38px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.3);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+  .file-list.grid .file-icon{width:44px;height:44px;font-size:1.3rem}
+  .file-info{flex:1;min-width:0}
+  .file-name{font-weight:600;font-size:0.92rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .file-meta{font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:3px}
+  .file-desc{font-size:0.78rem;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .file-category{display:inline-block;padding:2px 8px;font-family:var(--mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;border:1px solid;margin-top:4px}
+  .file-ext{font-family:var(--mono);font-size:0.62rem;padding:3px 8px;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);color:var(--accent2);text-transform:uppercase;flex-shrink:0}
+  .file-actions{display:flex;align-items:center;gap:6px;flex-shrink:0;flex-wrap:wrap}
+  .file-list.grid .file-actions{margin-top:auto;padding-top:8px}
+  .download-btn{padding:7px 16px;background:var(--accent);color:white;border:none;font-family:var(--mono);font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s;text-decoration:none;display:inline-block}
+  .download-btn:hover{background:#6d28d9}
+  .delete-btn{background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:0.85rem;padding:4px 7px;opacity:0.5;transition:opacity 0.2s}
+  .delete-btn:hover{opacity:1}
+  .edit-btn{background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:0.68rem;padding:5px 10px;font-family:var(--mono);transition:all 0.2s}
+  .edit-btn:hover{border-color:var(--accent);color:var(--accent2)}
+  .report-btn{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:0.75rem;padding:4px 7px;opacity:0.5;transition:opacity 0.2s;font-family:var(--mono)}
+  .report-btn:hover{opacity:1;color:var(--danger)}
+
+  /* DOWNLOAD COUNTER */
+  .dl-counter{font-family:var(--mono);font-size:0.65rem;color:var(--muted)}
+
+  /* STARS */
+  .stars-row{padding:10px 18px;display:flex;align-items:center;gap:10px;border-top:1px solid var(--border);flex-wrap:wrap}
+  .stars-display{display:flex;gap:1px}
+  .star-icon{color:#334155;font-size:0.95rem}
+  .star-icon.filled{color:var(--star)}
+  .rating-info{font-family:var(--mono);font-size:0.68rem;color:var(--muted)}
+  .review-toggle{font-family:var(--mono);font-size:0.62rem;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;margin-left:auto}
+  .review-toggle:hover{border-color:var(--accent);color:var(--accent2)}
+
+  /* REVIEWS */
+  .reviews-section{border-top:1px solid var(--border);padding:18px;display:none}
+  .reviews-section.open{display:block}
+  .reviews-title{font-family:var(--mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:14px}
+  .review-form{background:rgba(124,58,237,0.04);border:1px solid rgba(124,58,237,0.15);padding:14px;margin-bottom:18px}
+  .review-form-title{font-family:var(--mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:2px;color:var(--accent2);margin-bottom:10px}
+  .star-picker{display:flex;gap:4px;margin-bottom:10px}
+  .star-pick{font-size:1.3rem;cursor:pointer;color:#334155;transition:color 0.15s,transform 0.1s}
+  .star-pick:hover,.star-pick.active{color:var(--star);transform:scale(1.15)}
+  .review-inputs{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .review-inputs input{flex:1;min-width:120px;padding:8px 12px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.78rem;outline:none;transition:border-color 0.2s}
+  .review-inputs input:focus{border-color:var(--accent)}
+  .review-inputs input::placeholder{color:var(--muted)}
+  .review-comment-input{width:100%;padding:8px 12px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.78rem;outline:none;transition:border-color 0.2s;resize:vertical;margin-bottom:8px}
+  .review-comment-input:focus{border-color:var(--accent)}
+  .review-comment-input::placeholder{color:var(--muted)}
+  .submit-review{padding:7px 18px;background:var(--accent);color:white;border:none;font-family:var(--mono);font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+  .submit-review:hover{background:#6d28d9}
+  .submit-review:disabled{opacity:0.5;cursor:not-allowed}
+  .review-item{padding:10px 0;border-bottom:1px solid var(--border)}
+  .review-item:last-child{border-bottom:none}
+  .review-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+  .review-author{font-weight:600;font-size:0.82rem}
+  .review-stars{display:flex;gap:1px}
+  .review-star{font-size:0.75rem;color:#334155}
+  .review-star.filled{color:var(--star)}
+  .review-date{font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-left:auto}
+  .review-comment-text{font-size:0.82rem;color:#94a3b8;line-height:1.5}
+  .no-reviews{font-family:var(--mono);font-size:0.72rem;color:var(--muted);text-align:center;padding:16px 0}
+  .admin-del-review{background:transparent;border:none;color:var(--danger);cursor:pointer;font-size:0.7rem;opacity:0.4;transition:opacity 0.2s;margin-left:4px;font-family:var(--mono)}
+  .admin-del-review:hover{opacity:1}
+
+  /* ADMIN PANEL */
+  #adminPanel{display:none;background:rgba(124,58,237,0.05);border:1px solid rgba(124,58,237,0.2);padding:20px;margin-bottom:32px}
+  #adminPanel.active{display:block}
+  #adminPanel h3{font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent2);margin-bottom:14px}
+  .admin-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .tag-success{display:inline-block;padding:3px 8px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);color:var(--success);font-family:var(--mono);font-size:0.6rem;text-transform:uppercase;letter-spacing:1px;margin-left:10px}
+
+  /* STATS MODAL */
+  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+  .stats-box{background:var(--bg);border:1px solid var(--border);padding:16px;text-align:center}
+  .stats-box-num{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--accent2)}
+  .stats-box-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px;font-family:var(--mono)}
+  .top-list{margin-top:8px}
+  .top-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.8rem}
+  .top-item:last-child{border-bottom:none}
+  .top-item-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px}
+  .top-item-val{font-family:var(--mono);font-size:0.7rem;color:var(--accent2);flex-shrink:0;margin-left:8px}
+
+  /* MODALS */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
+  .modal-overlay.active{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--border);padding:36px;width:100%;max-width:480px;animation:modalIn 0.25s ease;max-height:90vh;overflow-y:auto}
+  @keyframes modalIn{from{opacity:0;transform:scale(0.95)}to{opacity:1;transform:scale(1)}}
+  .modal h2{font-size:1.1rem;margin-bottom:6px}
+  .modal>p{font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:24px}
+  .form-group{margin-bottom:18px}
+  .form-group label{display:block;font-family:var(--mono);font-size:0.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:7px}
+  .form-group input,.form-group textarea,.form-group select{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:0.82rem;outline:none;transition:border-color 0.2s;resize:vertical}
+  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent)}
+  .form-group input::placeholder,.form-group textarea::placeholder{color:var(--muted)}
+  .drop-zone{border:2px dashed var(--border);padding:28px;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;font-family:var(--mono);font-size:0.78rem;color:var(--muted)}
+  .drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:rgba(124,58,237,0.05);color:var(--accent2)}
+  .drop-zone input{display:none}
+  .modal-actions{display:flex;gap:10px;margin-top:24px}
+  .btn-primary{flex:1;padding:11px;background:var(--accent);color:white;border:none;font-family:var(--mono);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+  .btn-primary:hover{background:#6d28d9}
+  .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+  .btn-secondary{padding:11px 18px;background:transparent;color:var(--muted);border:1px solid var(--border);font-family:var(--mono);font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+  .btn-secondary:hover{border-color:var(--muted);color:var(--text)}
+  .error-msg{font-family:var(--mono);font-size:0.72rem;color:var(--danger);margin-top:7px;display:none}
+  .progress-wrap{margin-top:14px;display:none}
+  .progress-label{font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-bottom:5px}
+  .progress-bar{height:3px;background:var(--border)}
+  .progress-fill{height:100%;background:var(--accent);width:0%;transition:width 0.3s}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--border);padding:12px 18px;font-family:var(--mono);font-size:0.78rem;z-index:999;transform:translateY(60px);opacity:0;transition:all 0.3s;pointer-events:none}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.success{border-color:var(--success);color:var(--success)}
+  .toast.error{border-color:var(--danger);color:var(--danger)}
+
+  /* EMPTY / LOADING */
+  .empty-state{text-align:center;padding:50px 20px;color:var(--muted);font-family:var(--mono);font-size:0.78rem}
+  .empty-state .big{font-size:2.5rem;margin-bottom:14px}
+  .loading{text-align:center;padding:40px;font-family:var(--mono);font-size:0.78rem;color:var(--muted)}
+  .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  footer{border-top:1px solid var(--border);padding:20px 0;text-align:center;font-family:var(--mono);font-size:0.68rem;color:var(--muted);position:relative;z-index:1}
+  @media(max-width:600px){.file-ext,.dl-counter{display:none}.modal{padding:22px;margin:12px}.stats-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -155,7 +198,11 @@
 <header>
   <div class="container">
     <div class="logo"><span>//</span>FileVault</div>
-    <button class="admin-btn" id="adminToggleBtn" onclick="openPasswordModal()">Admin ⌘</button>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="toggleTheme()">🌙 Tema</button>
+      <button class="icon-btn" id="statsBtn" style="display:none" onclick="openStatsModal()">📊 Stats</button>
+      <button class="icon-btn" id="adminToggleBtn" onclick="openPasswordModal()">Admin ⌘</button>
+    </div>
   </div>
 </header>
 
@@ -167,20 +214,49 @@
   <div class="stats">
     <div class="stat"><div class="stat-num" id="totalFiles">—</div><div class="stat-label">Archivos</div></div>
     <div class="stat"><div class="stat-num" id="totalSize">—</div><div class="stat-label">Total</div></div>
+    <div class="stat"><div class="stat-num" id="totalDownloads">—</div><div class="stat-label">Descargas</div></div>
     <div class="stat"><div class="stat-num" id="totalReviews">—</div><div class="stat-label">Reseñas</div></div>
   </div>
+
   <div id="adminPanel">
     <h3>● Panel de administración <span class="tag-success">Activo</span></h3>
     <div class="admin-actions">
-      <button class="btn-primary" style="flex:none;padding:10px 24px;" onclick="openUploadModal()">+ Subir archivo</button>
+      <button class="btn-primary" style="flex:none;padding:9px 22px" onclick="openUploadModal()">+ Subir archivo</button>
       <button class="btn-secondary" onclick="logoutAdmin()">Cerrar sesión</button>
     </div>
   </div>
-  <div class="search-bar">
-    <span class="search-icon">🔍</span>
-    <input type="text" id="searchInput" placeholder="Buscar archivo..." oninput="filterFiles()">
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Buscar archivo..." oninput="filterFiles()">
+    </div>
+    <select class="filter-select" id="categoryFilter" onchange="filterFiles()">
+      <option value="">Todas las categorías</option>
+      <option value="general">General</option>
+      <option value="mods">Mods</option>
+      <option value="herramientas">Herramientas</option>
+      <option value="documentos">Documentos</option>
+      <option value="scripts">Scripts</option>
+      <option value="otros">Otros</option>
+    </select>
+    <select class="filter-select" id="sortFilter" onchange="filterFiles()">
+      <option value="date_desc">Más recientes</option>
+      <option value="date_asc">Más antiguos</option>
+      <option value="name_asc">Nombre A-Z</option>
+      <option value="downloads_desc">Más descargados</option>
+      <option value="rating_desc">Mejor calificados</option>
+    </select>
+    <div class="view-btns">
+      <button class="view-btn active" id="listViewBtn" onclick="setView('list')" title="Lista">☰</button>
+      <button class="view-btn" id="gridViewBtn" onclick="setView('grid')" title="Grilla">⊞</button>
+    </div>
   </div>
-  <div class="section-title">Archivos disponibles</div>
+
+  <div class="section-title">
+    <span>Archivos disponibles</span>
+    <span id="resultCount" style="font-size:0.6rem"></span>
+  </div>
   <div class="file-list" id="fileList">
     <div class="loading"><div class="spinner"></div>Cargando archivos...</div>
   </div>
@@ -191,12 +267,12 @@
 
 <!-- Password Modal -->
 <div class="modal-overlay" id="passwordModal">
-  <div class="modal" style="max-width:380px">
+  <div class="modal" style="max-width:360px">
     <h2>Acceso Admin</h2>
-    <p>// ingresá la contraseña para continuar</p>
+    <p>// ingresá la contraseña</p>
     <div class="form-group">
       <label>Contraseña</label>
-      <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter') checkPassword()">
+      <input type="password" id="passwordInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPassword()">
       <div class="error-msg" id="passwordError">Contraseña incorrecta.</div>
     </div>
     <div class="modal-actions">
@@ -210,12 +286,12 @@
 <div class="modal-overlay" id="uploadModal">
   <div class="modal">
     <h2>Subir archivo</h2>
-    <p>// cualquier tipo de archivo excepto imágenes y videos</p>
+    <p>// cualquier tipo excepto imágenes y videos</p>
     <div class="form-group">
       <label>Archivo</label>
       <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="dragOver(event)" ondragleave="dragLeave()" ondrop="dropFile(event)">
         <input type="file" id="fileInput" onchange="fileSelected(event)">
-        <div id="dropText"><div style="font-size:2rem;margin-bottom:8px">📂</div>Hacé click o arrastrá un archivo aquí</div>
+        <div id="dropText"><div style="font-size:2rem;margin-bottom:8px">📂</div>Hacé click o arrastrá aquí</div>
       </div>
       <div class="progress-wrap" id="progressWrap">
         <div class="progress-label" id="progressLabel">Subiendo... 0%</div>
@@ -223,12 +299,90 @@
       </div>
     </div>
     <div class="form-group">
+      <label>Categoría</label>
+      <select id="uploadCategory">
+        <option value="general">General</option>
+        <option value="mods">Mods</option>
+        <option value="herramientas">Herramientas</option>
+        <option value="documentos">Documentos</option>
+        <option value="scripts">Scripts</option>
+        <option value="otros">Otros</option>
+      </select>
+    </div>
+    <div class="form-group">
       <label>Descripción (opcional)</label>
-      <textarea id="fileDesc" rows="2" placeholder="Breve descripción del archivo..."></textarea>
+      <textarea id="fileDesc" rows="2" placeholder="Breve descripción..."></textarea>
     </div>
     <div class="modal-actions">
       <button class="btn-primary" id="uploadBtn" onclick="uploadFile()">Publicar</button>
       <button class="btn-secondary" onclick="closeModal('uploadModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal" style="max-width:420px">
+    <h2>Editar archivo</h2>
+    <p>// modificá nombre, categoría o descripción</p>
+    <input type="hidden" id="editFileId">
+    <div class="form-group">
+      <label>Nombre</label>
+      <input type="text" id="editName" placeholder="Nombre del archivo">
+    </div>
+    <div class="form-group">
+      <label>Categoría</label>
+      <select id="editCategory">
+        <option value="general">General</option>
+        <option value="mods">Mods</option>
+        <option value="herramientas">Herramientas</option>
+        <option value="documentos">Documentos</option>
+        <option value="scripts">Scripts</option>
+        <option value="otros">Otros</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="editDesc" rows="2" placeholder="Descripción..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="saveEdit()">Guardar</button>
+      <button class="btn-secondary" onclick="closeModal('editModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="reportModal">
+  <div class="modal" style="max-width:380px">
+    <h2>Reportar archivo</h2>
+    <p>// indicá el motivo del reporte</p>
+    <input type="hidden" id="reportFileId">
+    <div class="form-group">
+      <label>Motivo</label>
+      <select id="reportReason">
+        <option value="contenido_inapropiado">Contenido inapropiado</option>
+        <option value="spam">Spam</option>
+        <option value="malware">Posible malware</option>
+        <option value="copyright">Violación de copyright</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="submitReport()">Enviar reporte</button>
+      <button class="btn-secondary" onclick="closeModal('reportModal')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Modal -->
+<div class="modal-overlay" id="statsModal">
+  <div class="modal">
+    <h2>📊 Estadísticas</h2>
+    <p>// resumen del repositorio</p>
+    <div id="statsContent"><div class="loading"><div class="spinner"></div>Cargando...</div></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" style="flex:1" onclick="closeModal('statsModal')">Cerrar</button>
     </div>
   </div>
 </div>
@@ -239,274 +393,270 @@
   const ADMIN_PASSWORD = 'admin1234'; // ← CAMBIÁ ESTO
   const BUCKET = 'files';
   const BLOCKED_TYPES = ['image/', 'video/'];
+  const CATEGORY_COLORS = {general:'#64748b',mods:'#10b981',herramientas:'#f59e0b',documentos:'#3b82f6',scripts:'#8b5cf6',otros:'#ec4899'};
 
   const { createClient } = supabase;
   const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let isAdmin = false;
-  let selectedFile = null;
-  let allFiles = [];
-  let reviewsCache = {};
+  let isAdmin = false, selectedFile = null, allFiles = [], reviewsCache = {}, currentView = 'list';
 
-  function getFileIcon(ext) {
-    const m = {pdf:'📄',zip:'🗜️',rar:'🗜️','7z':'🗜️',tar:'🗜️',gz:'🗜️',exe:'⚙️',msi:'⚙️',apk:'📱',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',ppt:'📑',pptx:'📑',txt:'📃',csv:'📊',json:'🔧',xml:'🔧',html:'🌐',css:'🎨',js:'🟨',py:'🐍',cpp:'💻',c:'💻',cs:'💻',java:'☕',ts:'🔷',mp3:'🎵',wav:'🎵',ogg:'🎵',flac:'🎵',aac:'🎵'};
-    return m[ext?.toLowerCase()] || '📁';
+  // ── HELPERS ──────────────────────────────────────────────
+  function getFileIcon(ext){const m={pdf:'📄',zip:'🗜️',rar:'🗜️','7z':'🗜️',tar:'🗜️',gz:'🗜️',exe:'⚙️',msi:'⚙️',apk:'📱',doc:'📝',docx:'📝',xls:'📊',xlsx:'📊',ppt:'📑',pptx:'📑',txt:'📃',csv:'📊',json:'🔧',xml:'🔧',html:'🌐',css:'🎨',js:'🟨',py:'🐍',cpp:'💻',c:'💻',cs:'💻',java:'☕',ts:'🔷',mp3:'🎵',wav:'🎵',ogg:'🎵',flac:'🎵',aac:'🎵'};return m[ext?.toLowerCase()]||'📁'}
+  function formatSize(b){if(!b)return'—';if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB'}
+  function formatDate(ts){return new Date(ts).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric'})}
+  function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3000)}
+  function starsHTML(rating,cls='star-icon'){return[1,2,3,4,5].map(i=>`<span class="${cls}${i<=rating?' filled':''}"">★</span>`).join('')}
+  function categoryBadge(cat){const c=CATEGORY_COLORS[cat]||'#64748b';return`<span class="file-category" style="color:${c};border-color:${c}40;background:${c}15">${cat||'general'}</span>`}
+
+  // ── TEMA ──────────────────────────────────────────────────
+  function toggleTheme(){
+    document.body.classList.toggle('light');
+    const btn=document.querySelector('[onclick="toggleTheme()"]');
+    btn.textContent=document.body.classList.contains('light')?'🌑 Tema':'🌙 Tema';
+    localStorage.setItem('fv_theme',document.body.classList.contains('light')?'light':'dark');
+  }
+  if(localStorage.getItem('fv_theme')==='light'){document.body.classList.add('light');document.querySelector('[onclick="toggleTheme()"]').textContent='🌑 Tema'}
+
+  // ── VISTA ─────────────────────────────────────────────────
+  function setView(v){
+    currentView=v;
+    const list=document.getElementById('fileList');
+    list.classList.toggle('grid',v==='grid');
+    document.getElementById('listViewBtn').classList.toggle('active',v==='list');
+    document.getElementById('gridViewBtn').classList.toggle('active',v==='grid');
   }
 
-  function formatSize(b) {
-    if (!b) return '—';
-    if (b < 1024) return b + ' B';
-    if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
-    return (b/1048576).toFixed(1) + ' MB';
+  // ── CARGAR ────────────────────────────────────────────────
+  async function loadFiles(){
+    const {data,error}=await db.from('files').select('*').order('created_at',{ascending:false});
+    if(error){document.getElementById('fileList').innerHTML=`<div class="empty-state"><div class="big">⚠️</div>${error.message}</div>`;return}
+    allFiles=data||[];
+    const {data:revData}=await db.from('reviews').select('*').order('created_at',{ascending:false});
+    reviewsCache={};let totalRevs=0,totalDl=0;
+    (revData||[]).forEach(r=>{if(!reviewsCache[r.file_id])reviewsCache[r.file_id]=[];reviewsCache[r.file_id].push(r);totalRevs++});
+    allFiles.forEach(f=>totalDl+=(f.downloads||0));
+    document.getElementById('totalFiles').textContent=allFiles.length;
+    document.getElementById('totalReviews').textContent=totalRevs;
+    document.getElementById('totalDownloads').textContent=totalDl;
+    document.getElementById('totalSize').textContent=formatSize(allFiles.reduce((s,f)=>s+(f.size||0),0));
+    filterFiles();
   }
 
-  function formatDate(ts) {
-    return new Date(ts).toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
+  function filterFiles(){
+    const q=document.getElementById('searchInput').value.toLowerCase();
+    const cat=document.getElementById('categoryFilter').value;
+    const sort=document.getElementById('sortFilter').value;
+    let files=allFiles.filter(f=>(f.name.toLowerCase().includes(q)||(f.description||'').toLowerCase().includes(q))&&(!cat||f.category===cat));
+    const avg=f=>{const r=reviewsCache[f.id]||[];return r.length?r.reduce((s,x)=>s+x.rating,0)/r.length:0};
+    if(sort==='date_asc')files.sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+    else if(sort==='name_asc')files.sort((a,b)=>a.name.localeCompare(b.name));
+    else if(sort==='downloads_desc')files.sort((a,b)=>(b.downloads||0)-(a.downloads||0));
+    else if(sort==='rating_desc')files.sort((a,b)=>avg(b)-avg(a));
+    document.getElementById('resultCount').textContent=`${files.length} archivo${files.length!==1?'s':''}`;
+    renderFiles(files);
   }
 
-  function showToast(msg, type='success') {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = `toast ${type} show`;
-    setTimeout(() => t.classList.remove('show'), 3000);
-  }
-
-  function starsHTML(rating, cls='star-icon') {
-    return [1,2,3,4,5].map(i => `<span class="${cls}${i <= rating ? ' filled' : ''}">★</span>`).join('');
-  }
-
-  // ── CARGAR ARCHIVOS ──────────────────────────────────────
-  async function loadFiles() {
-    const { data, error } = await db.from('files').select('*').order('created_at', {ascending: false});
-    if (error) {
-      document.getElementById('fileList').innerHTML = `<div class="empty-state"><div class="big">⚠️</div>Error al cargar.<br><small>${error.message}</small></div>`;
-      return;
-    }
-    allFiles = data || [];
-
-    // Cargar todas las reseñas de una vez
-    const { data: revData } = await db.from('reviews').select('*').order('created_at', {ascending: false});
-    reviewsCache = {};
-    let totalRevs = 0;
-    (revData || []).forEach(r => {
-      if (!reviewsCache[r.file_id]) reviewsCache[r.file_id] = [];
-      reviewsCache[r.file_id].push(r);
-      totalRevs++;
-    });
-
-    document.getElementById('totalFiles').textContent = allFiles.length;
-    document.getElementById('totalReviews').textContent = totalRevs;
-    const total = allFiles.reduce((s,f) => s+(f.size||0), 0);
-    document.getElementById('totalSize').textContent = formatSize(total);
-    renderFiles(allFiles);
-  }
-
-  function filterFiles() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    renderFiles(allFiles.filter(f => f.name.toLowerCase().includes(q) || (f.description||'').toLowerCase().includes(q)));
-  }
-
-  function renderFiles(files) {
-    const list = document.getElementById('fileList');
-    if (!files.length) { list.innerHTML = `<div class="empty-state"><div class="big">📭</div>No hay archivos disponibles.</div>`; return; }
-    list.innerHTML = files.map((f, i) => {
-      const ext = f.name.split('.').pop();
-      const url = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${f.storage_path}`;
-      const reviews = reviewsCache[f.id] || [];
-      const avgRating = reviews.length ? (reviews.reduce((s,r) => s+r.rating, 0) / reviews.length) : 0;
-      const roundedAvg = Math.round(avgRating);
-      return `
-      <div class="file-card" style="animation-delay:${i*0.05}s" id="card-${f.id}">
+  function renderFiles(files){
+    const list=document.getElementById('fileList');
+    if(currentView==='grid')list.classList.add('grid'); else list.classList.remove('grid');
+    if(!files.length){list.innerHTML=`<div class="empty-state"><div class="big">📭</div>No hay archivos.</div>`;return}
+    list.innerHTML=files.map((f,i)=>{
+      const ext=f.name.split('.').pop();
+      const url=`${SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${f.storage_path}`;
+      const reviews=reviewsCache[f.id]||[];
+      const avgR=reviews.length?reviews.reduce((s,r)=>s+r.rating,0)/reviews.length:0;
+      return`<div class="file-card" style="animation-delay:${i*0.04}s" id="card-${f.id}">
         <div class="file-main">
           <div class="file-icon">${getFileIcon(ext)}</div>
           <div class="file-info">
             <div class="file-name">${f.name}</div>
-            ${f.description ? `<div class="file-desc">${f.description}</div>` : ''}
+            ${f.description?`<div class="file-desc">${f.description}</div>`:''}
+            ${categoryBadge(f.category)}
             <div class="file-meta">${formatSize(f.size)} &bull; ${formatDate(f.created_at)}</div>
           </div>
           <div class="file-ext">${ext}</div>
           <div class="file-actions">
-            <a class="download-btn" href="${url}" download="${f.name}" target="_blank">↓ Descargar</a>
-            ${isAdmin ? `<button class="delete-btn" onclick="deleteFile('${f.id}','${f.storage_path}')">✕</button>` : ''}
+            <span class="dl-counter">⬇ ${f.downloads||0}</span>
+            <a class="download-btn" href="${url}" target="_blank" onclick="countDownload('${f.id}')">↓ Descargar</a>
+            ${isAdmin?`<button class="edit-btn" onclick="openEditModal('${f.id}')">✏️</button><button class="delete-btn" onclick="deleteFile('${f.id}','${f.storage_path}')">✕</button>`:''}
+            <button class="report-btn" onclick="openReportModal('${f.id}')" title="Reportar">⚑</button>
           </div>
         </div>
         <div class="stars-row">
-          <div class="stars-display">${starsHTML(roundedAvg)}</div>
-          <div class="rating-info">
-            ${avgRating > 0 ? `${avgRating.toFixed(1)} / 5` : 'Sin calificación'} &bull; ${reviews.length} reseña${reviews.length !== 1 ? 's' : ''}
-          </div>
-          <button class="review-toggle" onclick="toggleReviews('${f.id}')">
-            💬 Reseñas
-          </button>
+          <div class="stars-display">${starsHTML(Math.round(avgR))}</div>
+          <div class="rating-info">${avgR>0?avgR.toFixed(1)+' / 5':'Sin calif.'} &bull; ${reviews.length} reseña${reviews.length!==1?'s':''}</div>
+          <button class="review-toggle" onclick="toggleReviews('${f.id}')">💬 Reseñas</button>
         </div>
         <div class="reviews-section" id="reviews-${f.id}">
-          <div class="reviews-title">// dejar una reseña</div>
+          <div class="reviews-title">// dejá tu reseña</div>
           <div class="review-form">
             <div class="review-form-title">Tu calificación</div>
             <div class="star-picker" id="picker-${f.id}">
-              ${[1,2,3,4,5].map(n => `<span class="star-pick" data-val="${n}" onclick="pickStar('${f.id}',${n})">★</span>`).join('')}
+              ${[1,2,3,4,5].map(n=>`<span class="star-pick" data-val="${n}" onclick="pickStar('${f.id}',${n})">★</span>`).join('')}
             </div>
-            <div class="review-inputs">
-              <input type="text" id="author-${f.id}" placeholder="Tu nombre o apodo" maxlength="40">
-            </div>
-            <textarea class="review-comment" id="comment-${f.id}" rows="2" placeholder="Comentario (opcional)..."></textarea>
+            <div class="review-inputs"><input type="text" id="author-${f.id}" placeholder="Tu nombre o apodo" maxlength="40"></div>
+            <textarea class="review-comment-input" id="comment-${f.id}" rows="2" placeholder="Comentario (opcional)..."></textarea>
             <button class="submit-review" onclick="submitReview('${f.id}')">Publicar reseña</button>
           </div>
-          <div class="reviews-title" style="margin-top:8px">// reseñas de otros</div>
-          <div id="review-list-${f.id}">
-            ${renderReviewList(reviews)}
-          </div>
+          <div class="reviews-title">// reseñas</div>
+          <div id="review-list-${f.id}">${renderReviewList(reviews,f.id)}</div>
         </div>
       </div>`;
     }).join('');
   }
 
-  function renderReviewList(reviews) {
-    if (!reviews.length) return `<div class="no-reviews">Todavía no hay reseñas. ¡Sé el primero!</div>`;
-    return reviews.map(r => `
-      <div class="review-item">
-        <div class="review-header">
-          <span class="review-author">${r.author}</span>
-          <div class="review-stars">${starsHTML(r.rating, 'review-star')}</div>
-          <span class="review-date">${formatDate(r.created_at)}</span>
-        </div>
-        ${r.comment ? `<div class="review-comment-text">${r.comment}</div>` : ''}
-      </div>`).join('');
+  function renderReviewList(reviews,fileId){
+    if(!reviews.length)return`<div class="no-reviews">Todavía no hay reseñas.</div>`;
+    return reviews.map(r=>`<div class="review-item" id="rev-${r.id}">
+      <div class="review-header">
+        <span class="review-author">${r.author}</span>
+        <div class="review-stars">${starsHTML(r.rating,'review-star')}</div>
+        <span class="review-date">${formatDate(r.created_at)}</span>
+        ${isAdmin?`<button class="admin-del-review" onclick="deleteReview('${r.id}','${fileId}')">✕</button>`:''}
+      </div>
+      ${r.comment?`<div class="review-comment-text">${r.comment}</div>`:''}
+    </div>`).join('');
   }
 
-  // ── ESTRELLAS ────────────────────────────────────────────
-  const selectedStars = {};
-
-  function pickStar(fileId, val) {
-    selectedStars[fileId] = val;
-    const picker = document.getElementById(`picker-${fileId}`);
-    picker.querySelectorAll('.star-pick').forEach(s => {
-      s.classList.toggle('active', parseInt(s.dataset.val) <= val);
-    });
+  // ── DESCARGAS ─────────────────────────────────────────────
+  async function countDownload(fileId){
+    await db.rpc('increment_downloads',{file_id:fileId});
+    const f=allFiles.find(x=>x.id===fileId);
+    if(f){f.downloads=(f.downloads||0)+1;document.getElementById('totalDownloads').textContent=allFiles.reduce((s,x)=>s+(x.downloads||0),0)}
   }
 
-  // ── TOGGLE RESEÑAS ───────────────────────────────────────
-  function toggleReviews(fileId) {
-    const sec = document.getElementById(`reviews-${fileId}`);
-    sec.classList.toggle('open');
+  // ── ESTRELLAS ─────────────────────────────────────────────
+  const selectedStars={};
+  function pickStar(fileId,val){
+    selectedStars[fileId]=val;
+    document.getElementById(`picker-${fileId}`).querySelectorAll('.star-pick').forEach(s=>s.classList.toggle('active',parseInt(s.dataset.val)<=val));
   }
 
-  // ── ENVIAR RESEÑA ────────────────────────────────────────
-  async function submitReview(fileId) {
-    const rating = selectedStars[fileId];
-    const author = document.getElementById(`author-${fileId}`).value.trim();
-    const comment = document.getElementById(`comment-${fileId}`).value.trim();
+  function toggleReviews(fileId){document.getElementById(`reviews-${fileId}`).classList.toggle('open')}
 
-    if (!rating) { showToast('Seleccioná una calificación de estrellas.', 'error'); return; }
-    if (!author) { showToast('Ingresá tu nombre o apodo.', 'error'); return; }
-
-    const btn = document.querySelector(`#reviews-${fileId} .submit-review`);
-    btn.disabled = true; btn.textContent = 'Enviando...';
-
-    const { error } = await db.from('reviews').insert({
-      file_id: fileId, author, rating, comment: comment || null
-    });
-
-    if (error) {
-      showToast('Error al publicar: ' + error.message, 'error');
-      btn.disabled = false; btn.textContent = 'Publicar reseña';
-      return;
-    }
-
+  async function submitReview(fileId){
+    const rating=selectedStars[fileId];
+    const author=document.getElementById(`author-${fileId}`).value.trim();
+    const comment=document.getElementById(`comment-${fileId}`).value.trim();
+    if(!rating){showToast('Seleccioná estrellas.','error');return}
+    if(!author){showToast('Ingresá tu nombre.','error');return}
+    const btn=document.querySelector(`#reviews-${fileId} .submit-review`);
+    btn.disabled=true;btn.textContent='Enviando...';
+    const {error}=await db.from('reviews').insert({file_id:fileId,author,rating,comment:comment||null});
+    if(error){showToast('Error: '+error.message,'error');btn.disabled=false;btn.textContent='Publicar reseña';return}
     showToast('✅ Reseña publicada.');
-    // Recargar
     await loadFiles();
-    // Reabrir la sección
-    setTimeout(() => {
-      const sec = document.getElementById(`reviews-${fileId}`);
-      if (sec) sec.classList.add('open');
-    }, 100);
+    setTimeout(()=>{const s=document.getElementById(`reviews-${fileId}`);if(s)s.classList.add('open')},100);
   }
 
-  // ── SUBIR ARCHIVO ────────────────────────────────────────
-  async function uploadFile() {
-    if (!selectedFile) { showToast('Seleccioná un archivo primero.','error'); return; }
-    const btn = document.getElementById('uploadBtn');
-    btn.disabled = true; btn.textContent = 'Subiendo...';
-    const pw = document.getElementById('progressWrap');
-    const pf = document.getElementById('progressFill');
-    const pl = document.getElementById('progressLabel');
-    pw.style.display = 'block';
-    let p = 0;
-    const iv = setInterval(() => { if (p<85) { p+=5; pf.style.width=p+'%'; pl.textContent=`Subiendo... ${p}%`; } }, 200);
-    const path = `${Date.now()}_${selectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
-    const { error: ue } = await db.storage.from(BUCKET).upload(path, selectedFile, {contentType: selectedFile.type});
+  async function deleteReview(reviewId,fileId){
+    if(!confirm('¿Eliminar esta reseña?'))return;
+    await db.from('reviews').delete().eq('id',reviewId);
+    showToast('Reseña eliminada.');
+    await loadFiles();
+    setTimeout(()=>{const s=document.getElementById(`reviews-${fileId}`);if(s)s.classList.add('open')},100);
+  }
+
+  // ── SUBIR ─────────────────────────────────────────────────
+  async function uploadFile(){
+    if(!selectedFile){showToast('Seleccioná un archivo.','error');return}
+    const btn=document.getElementById('uploadBtn');btn.disabled=true;btn.textContent='Subiendo...';
+    const pw=document.getElementById('progressWrap'),pf=document.getElementById('progressFill'),pl=document.getElementById('progressLabel');
+    pw.style.display='block';let p=0;
+    const iv=setInterval(()=>{if(p<85){p+=5;pf.style.width=p+'%';pl.textContent=`Subiendo... ${p}%`}},200);
+    const path=`${Date.now()}_${selectedFile.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const {error:ue}=await db.storage.from(BUCKET).upload(path,selectedFile,{contentType:selectedFile.type});
     clearInterval(iv);
-    if (ue) { pw.style.display='none'; btn.disabled=false; btn.textContent='Publicar'; showToast('Error al subir: '+ue.message,'error'); return; }
-    pf.style.width='100%'; pl.textContent='Guardando...';
-    const { error: de } = await db.from('files').insert({name:selectedFile.name, description:document.getElementById('fileDesc').value.trim()||null, size:selectedFile.size, storage_path:path});
-    if (de) { showToast('Error al guardar: '+de.message,'error'); }
-    else { showToast('✅ Archivo publicado.'); closeModal('uploadModal'); await loadFiles(); }
-    pw.style.display='none'; btn.disabled=false; btn.textContent='Publicar';
+    if(ue){pw.style.display='none';btn.disabled=false;btn.textContent='Publicar';showToast('Error: '+ue.message,'error');return}
+    pf.style.width='100%';pl.textContent='Guardando...';
+    const {error:de}=await db.from('files').insert({name:selectedFile.name,description:document.getElementById('fileDesc').value.trim()||null,size:selectedFile.size,storage_path:path,category:document.getElementById('uploadCategory').value,downloads:0});
+    if(de){showToast('Error: '+de.message,'error')}else{showToast('✅ Archivo publicado.');closeModal('uploadModal');await loadFiles()}
+    pw.style.display='none';btn.disabled=false;btn.textContent='Publicar';
   }
 
-  // ── ELIMINAR ─────────────────────────────────────────────
-  async function deleteFile(id, path) {
-    if (!confirm('¿Eliminar este archivo y sus reseñas?')) return;
+  // ── EDITAR ────────────────────────────────────────────────
+  function openEditModal(fileId){
+    const f=allFiles.find(x=>x.id===fileId);if(!f)return;
+    document.getElementById('editFileId').value=fileId;
+    document.getElementById('editName').value=f.name;
+    document.getElementById('editCategory').value=f.category||'general';
+    document.getElementById('editDesc').value=f.description||'';
+    document.getElementById('editModal').classList.add('active');
+  }
+  async function saveEdit(){
+    const id=document.getElementById('editFileId').value;
+    const name=document.getElementById('editName').value.trim();
+    const category=document.getElementById('editCategory').value;
+    const description=document.getElementById('editDesc').value.trim();
+    if(!name){showToast('El nombre no puede estar vacío.','error');return}
+    const {error}=await db.from('files').update({name,category,description:description||null}).eq('id',id);
+    if(error){showToast('Error: '+error.message,'error')}else{showToast('✅ Archivo actualizado.');closeModal('editModal');await loadFiles()}
+  }
+
+  // ── ELIMINAR ──────────────────────────────────────────────
+  async function deleteFile(id,path){
+    if(!confirm('¿Eliminar este archivo y sus reseñas?'))return;
     await db.storage.from(BUCKET).remove([path]);
-    await db.from('files').delete().eq('id', id);
-    showToast('Archivo eliminado.'); await loadFiles();
+    await db.from('files').delete().eq('id',id);
+    showToast('Archivo eliminado.');await loadFiles();
   }
 
-  // ── ADMIN ────────────────────────────────────────────────
-  function openPasswordModal() {
-    if (isAdmin) { logoutAdmin(); return; }
-    document.getElementById('passwordInput').value = '';
-    document.getElementById('passwordError').style.display = 'none';
-    document.getElementById('passwordModal').classList.add('active');
-    setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+  // ── REPORTAR ──────────────────────────────────────────────
+  function openReportModal(fileId){document.getElementById('reportFileId').value=fileId;document.getElementById('reportModal').classList.add('active')}
+  async function submitReport(){
+    const fileId=document.getElementById('reportFileId').value;
+    const reason=document.getElementById('reportReason').value;
+    const {error}=await db.from('reports').insert({file_id:fileId,reason});
+    if(error){showToast('Error: '+error.message,'error')}else{showToast('✅ Reporte enviado. Gracias.');closeModal('reportModal')}
   }
-  function checkPassword() {
-    if (document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
-      isAdmin = true; closeModal('passwordModal');
+
+  // ── STATS MODAL ───────────────────────────────────────────
+  async function openStatsModal(){
+    document.getElementById('statsModal').classList.add('active');
+    const {data:reports}=await db.from('reports').select('*');
+    const totalDl=allFiles.reduce((s,f)=>s+(f.downloads||0),0);
+    const totalRevs=Object.values(reviewsCache).reduce((s,r)=>s+r.length,0);
+    const topDl=[...allFiles].sort((a,b)=>(b.downloads||0)-(a.downloads||0)).slice(0,5);
+    const avgFn=f=>{const r=reviewsCache[f.id]||[];return r.length?r.reduce((s,x)=>s+x.rating,0)/r.length:0};
+    const topRated=[...allFiles].filter(f=>(reviewsCache[f.id]||[]).length>0).sort((a,b)=>avgFn(b)-avgFn(a)).slice(0,5);
+    document.getElementById('statsContent').innerHTML=`
+      <div class="stats-grid">
+        <div class="stats-box"><div class="stats-box-num">${allFiles.length}</div><div class="stats-box-label">Archivos</div></div>
+        <div class="stats-box"><div class="stats-box-num">${totalDl}</div><div class="stats-box-label">Descargas</div></div>
+        <div class="stats-box"><div class="stats-box-num">${totalRevs}</div><div class="stats-box-label">Reseñas</div></div>
+        <div class="stats-box"><div class="stats-box-num">${(reports||[]).length}</div><div class="stats-box-label">Reportes</div></div>
+      </div>
+      <div class="reviews-title">// más descargados</div>
+      <div class="top-list">${topDl.length?topDl.map(f=>`<div class="top-item"><span class="top-item-name">${f.name}</span><span class="top-item-val">⬇ ${f.downloads||0}</span></div>`).join(''):'<div class="no-reviews">Sin datos aún.</div>'}</div>
+      <div class="reviews-title" style="margin-top:16px">// mejor calificados</div>
+      <div class="top-list">${topRated.length?topRated.map(f=>`<div class="top-item"><span class="top-item-name">${f.name}</span><span class="top-item-val">⭐ ${avgFn(f).toFixed(1)}</span></div>`).join(''):'<div class="no-reviews">Sin datos aún.</div>'}</div>
+      ${(reports||[]).length>0&&isAdmin?`<div class="reviews-title" style="margin-top:16px">// reportes recientes</div><div class="top-list">${[...reports].slice(-5).reverse().map(r=>{const f=allFiles.find(x=>x.id===r.file_id);return`<div class="top-item"><span class="top-item-name">${f?f.name:'Archivo eliminado'}</span><span class="top-item-val">${r.reason}</span></div>`}).join('')}</div>`:''}
+    `;
+  }
+
+  // ── ADMIN ──────────────────────────────────────────────────
+  function openPasswordModal(){if(isAdmin){logoutAdmin();return}document.getElementById('passwordInput').value='';document.getElementById('passwordError').style.display='none';document.getElementById('passwordModal').classList.add('active');setTimeout(()=>document.getElementById('passwordInput').focus(),100)}
+  function checkPassword(){
+    if(document.getElementById('passwordInput').value===ADMIN_PASSWORD){
+      isAdmin=true;closeModal('passwordModal');
       document.getElementById('adminPanel').classList.add('active');
-      document.getElementById('adminToggleBtn').textContent = 'Salir ✕';
-      renderFiles(allFiles);
-    } else {
-      document.getElementById('passwordError').style.display = 'block';
-      document.getElementById('passwordInput').value = '';
-      document.getElementById('passwordInput').focus();
-    }
+      document.getElementById('adminToggleBtn').textContent='Salir ✕';
+      document.getElementById('statsBtn').style.display='';
+      filterFiles();
+    }else{document.getElementById('passwordError').style.display='block';document.getElementById('passwordInput').value='';document.getElementById('passwordInput').focus()}
   }
-  function logoutAdmin() {
-    isAdmin = false;
-    document.getElementById('adminPanel').classList.remove('active');
-    document.getElementById('adminToggleBtn').textContent = 'Admin ⌘';
-    renderFiles(allFiles);
-  }
+  function logoutAdmin(){isAdmin=false;document.getElementById('adminPanel').classList.remove('active');document.getElementById('adminToggleBtn').textContent='Admin ⌘';document.getElementById('statsBtn').style.display='none';filterFiles()}
 
-  // ── UPLOAD MODAL ─────────────────────────────────────────
-  function openUploadModal() {
-    selectedFile = null;
-    document.getElementById('fileInput').value = '';
-    document.getElementById('fileDesc').value = '';
-    document.getElementById('progressWrap').style.display = 'none';
-    document.getElementById('dropText').innerHTML = '<div style="font-size:2rem;margin-bottom:8px">📂</div>Hacé click o arrastrá un archivo aquí';
-    document.getElementById('uploadModal').classList.add('active');
-  }
-  function fileSelected(e) {
-    const f = e.target.files[0]; if (!f) return;
-    if (BLOCKED_TYPES.some(t => f.type.startsWith(t))) { showToast('❌ No se permiten imágenes ni videos.','error'); return; }
-    selectedFile = f;
-    document.getElementById('dropText').innerHTML = `<div style="font-size:1.5rem;margin-bottom:6px">✅</div>${f.name}<br><small style="color:var(--muted)">${formatSize(f.size)}</small>`;
-  }
-  function dragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
-  function dragLeave() { document.getElementById('dropZone').classList.remove('drag-over'); }
-  function dropFile(e) {
-    e.preventDefault(); dragLeave();
-    const f = e.dataTransfer.files[0]; if (!f) return;
-    if (BLOCKED_TYPES.some(t => f.type.startsWith(t))) { showToast('❌ No se permiten imágenes ni videos.','error'); return; }
-    selectedFile = f;
-    document.getElementById('dropText').innerHTML = `<div style="font-size:1.5rem;margin-bottom:6px">✅</div>${f.name}<br><small style="color:var(--muted)">${formatSize(f.size)}</small>`;
-  }
-  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-  document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target===o) o.classList.remove('active'); }));
+  // ── UPLOAD MODAL ──────────────────────────────────────────
+  function openUploadModal(){selectedFile=null;document.getElementById('fileInput').value='';document.getElementById('fileDesc').value='';document.getElementById('progressWrap').style.display='none';document.getElementById('dropText').innerHTML='<div style="font-size:2rem;margin-bottom:8px">📂</div>Hacé click o arrastrá aquí';document.getElementById('uploadModal').classList.add('active')}
+  function fileSelected(e){const f=e.target.files[0];if(!f)return;if(BLOCKED_TYPES.some(t=>f.type.startsWith(t))){showToast('❌ No se permiten imágenes ni videos.','error');return}selectedFile=f;document.getElementById('dropText').innerHTML=`<div style="font-size:1.5rem;margin-bottom:6px">✅</div>${f.name}<br><small style="color:var(--muted)">${formatSize(f.size)}</small>`}
+  function dragOver(e){e.preventDefault();document.getElementById('dropZone').classList.add('drag-over')}
+  function dragLeave(){document.getElementById('dropZone').classList.remove('drag-over')}
+  function dropFile(e){e.preventDefault();dragLeave();const f=e.dataTransfer.files[0];if(!f)return;if(BLOCKED_TYPES.some(t=>f.type.startsWith(t))){showToast('❌ No se permiten imágenes ni videos.','error');return}selectedFile=f;document.getElementById('dropText').innerHTML=`<div style="font-size:1.5rem;margin-bottom:6px">✅</div>${f.name}<br><small style="color:var(--muted)">${formatSize(f.size)}</small>`}
+  function closeModal(id){document.getElementById(id).classList.remove('active')}
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('active')}));
 
-  document.getElementById('year').textContent = new Date().getFullYear();
+  document.getElementById('year').textContent=new Date().getFullYear();
   loadFiles();
 </script>
 </body>
